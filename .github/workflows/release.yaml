@@ -1,11 +1,10 @@
 # This CD script builds and pushes the package to code artifact
 
-name: Publish PyPI Package
+name: Create package artifact
 
 on:
   push:
-    branches:
-      - "**" # All branches
+    tags: v**
 
 env:
   POETRY_VERSION: 1.2
@@ -20,7 +19,6 @@ jobs:
       - name: Install poetry
         run: |
           pipx install poetry==${{ env.POETRY_VERSION }}
-          poetry self add "poetry-dynamic-versioning[plugin]"
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -35,8 +33,10 @@ jobs:
         name: Build package 🔧
         run: poetry build
 
-      - name: Save ackage
-        uses: actions/upload-artifact@v3
+      - name: Create release 🔔
+        if: steps.upload.outcome == 'success'
+        uses: ncipollo/release-action@v1
         with:
-          name: pytest-localstack.whl
-          path: dist/*.whl
+          artifacts: "dist/*"
+          generateReleaseNotes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
