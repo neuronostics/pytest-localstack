@@ -1,0 +1,41 @@
+# This CD script builds and pushes the package to code artifact
+
+name: Publish PyPI Package
+
+on:
+  push:
+    branches: "*"
+
+env:
+  POETRY_VERSION: 1.2
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: |
+          pipx install poetry==${{ env.POETRY_VERSION }}
+          poetry self add "poetry-dynamic-versioning[plugin]"
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          cache: "poetry"
+
+      - name: Install Dependencies
+        run: poetry install --sync
+
+      - id: build
+        name: Build package 🔧
+        run: poetry build
+
+      - name: Save ackage
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-localstack.whl
+          path: dist/*.whl
