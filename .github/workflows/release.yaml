@@ -4,7 +4,8 @@ name: Publish PyPI Package
 
 on:
   push:
-    branches: "*"
+    branches:
+      - "**" # All branches
 
 env:
   POETRY_VERSION: 1.2
