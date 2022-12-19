@@ -34,7 +34,6 @@ jobs:
         run: poetry build
 
       - name: Create release 🔔
-        if: steps.upload.outcome == 'success'
         uses: ncipollo/release-action@v1
         with:
           artifacts: "dist/*"
